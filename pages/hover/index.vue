@@ -4,14 +4,14 @@ const ROW = 30;
 
 const COLOR_NUM = 7;
 
-const LEAVING_DURATION = 1000;
+const LEAVING_DURATION = 900;
 const COLOR_CHANGE_INTERVAL = 300;
 
 let colorIndex = 1;
 
 const COLOR_LIST = [
   "hsl(23deg, 97%, 55%)",
-  "hsl(74deg, 97%, 55%)",
+  "hsl(55deg, 97%, 55%)",
   "hsl(126deg, 97%, 55%)",
   "hsl(177deg, 97%, 55%)",
   "hsl(229deg, 97%, 55%)",
@@ -34,24 +34,40 @@ const inputsState = ref<
     checked: boolean;
     className: string;
     intervalId: null | number;
+    intervalId2: null | number;
+    intervalId3: null | number;
   }[]
 >([]);
 
 const enterCheckBox = (index: number) => {
-  inputsState.value[index].checked = true;
-  inputsState.value[index].className = "enter";
+
   const intervalId = inputsState.value[index].intervalId;
+  const intervalId2 = inputsState.value[index].intervalId2;
+  const intervalId3 = inputsState.value[index].intervalId2;
   if (intervalId) {
     clearInterval(intervalId);
   }
+  if (intervalId2) {
+    clearInterval(intervalId2);
+  }
+  if (intervalId3) {
+    clearInterval(intervalId3);
+  }
+  inputsState.value[index].checked = true;
+  inputsState.value[index].className = "enter";
   requestAnimationFrame(() => {
     inputsState.value[index].className = "active";
   });
 };
 
 const leaveCheckBox = (index: number) => {
-  inputsState.value[index].className = "leaving";
   inputsState.value[index].intervalId = window.setTimeout(() => {
+    inputsState.value[index].className = "leaving";
+  }, LEAVING_DURATION/3);
+  inputsState.value[index].intervalId2 = window.setTimeout(() => {
+    inputsState.value[index].className = "leaving";
+  }, LEAVING_DURATION/3*2);
+  inputsState.value[index].intervalId3 = window.setTimeout(() => {
     inputsState.value[index].checked = false;
     inputsState.value[index].className = "";
   }, LEAVING_DURATION);
@@ -64,6 +80,8 @@ onMounted(() => {
       checked: false,
       className: "",
       intervalId: null,
+      intervalId2: null,
+      intervalId3: null,
     };
   }
   inputsState.value = list;
@@ -129,20 +147,25 @@ input {
   width: 14px;
   height: 14px;
   margin: 1px;
+
   &.enter {
     transition: accent-color 0s linear;
+    accent-color: v-bind(color1);
   }
 
   &.active {
+    transition: accent-color 0.3s linear;
     accent-color: v-bind(color1);
-    transition: accent-color 0.2s linear;
-    box-shadow: 0 0 16px 2px  v-bind(color1);
+    box-shadow: 0 0 10px 2px v-bind(color1);
   }
   &.leaving {
-    transition: accent-color 0.2s linear;
+    transition: accent-color 0.3s linear;
     accent-color: v-bind(color2);
-    box-shadow: 0 0  16px 2px v-bind(color2);
-
+    box-shadow: 0 0 10px 2px v-bind(color2);
+  }
+  &.leaving2 {
+    accent-color: v-bind(color3);
+    box-shadow: 0 0 10px 2px v-bind(color3);
   }
 }
 
